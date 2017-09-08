@@ -47,15 +47,8 @@ while True:
     screen.blit(background, (0, 0))
     
     agentes = novosAgentes(agentes, dimensaoTela, offset)
-
     for a in agentes:
         screen.blit(a.image, (a.x, a.y))
 
-    """
-    for t in tubaroes:
-        for a in agentes:
-            if t.colisao(a, offset) and not isinstance(a, Tubarao):
-                a.tempoVida = 0
-    """
     pygame.display.update()
     time_passed = clock.tick(5)
