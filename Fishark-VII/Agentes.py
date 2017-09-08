@@ -100,10 +100,10 @@ class Tubarao(Agente):
     def proximaPosicao(self, agentes, dimensaoTela, offset):
         movimentosPossiveis = self.movimentar(dimensaoTela, offset)
         
-        for a in agentes: # victor, nao estava comendo por vcc tinha colocado isso depois dos laços abaixo, que se estiver perto de um peixe da return direto!
+        for a in agentes:
             if a is not self:
                 if isinstance(a, Peixe) and self.colisao(a, offset):
-                    a.tempoVida = 0 # nao podemos colocar break aqui, pois nao sabemos qual e o peixe da tela
+                    a.tempoVida = 0
         
         for a in agentes:
             if a is not self:
@@ -111,11 +111,6 @@ class Tubarao(Agente):
                     distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
                     self.x, self.y = min(distancias, key=lambda i: i[1])[0]
                     return None
-            # victor, pra q serve esse elif?   
-            """    elif isinstance(a, Tubarao) and self.manhattan(a) <= offset * Peixe.raio:
-                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
-                    self.x, self.y = max(distancias, key=lambda i: i[1])[0]
-                    return None"""
                     
         if len(movimentosPossiveis) > 0: self.x, self.y = random.choice(movimentosPossiveis)                
         
@@ -132,3 +127,6 @@ def novosAgentes(agentes, dimensaoTela, offset):
             lista.append(a)
         
     return lista
+
+def decrescimoProbabilidade (tempo, C = 1, p = 0.07):
+    return C * math.exp(-p * tempo)

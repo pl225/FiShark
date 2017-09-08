@@ -11,6 +11,7 @@ from Agentes import Peixe, Tubarao, novosAgentes
  
 pygame.init()
 
+matriz
 
 dimensaoTela = 640
 dimensaoGrade = 64
