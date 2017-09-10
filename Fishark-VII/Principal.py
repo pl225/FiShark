@@ -8,16 +8,17 @@ import pygame, random
 from pygame.locals import *
 from sys import exit
 from Agentes import Peixe, Tubarao, novosAgentes
+from Modelo import Grade
  
 pygame.init()
-
-matriz
 
 dimensaoTela = 640
 dimensaoGrade = 64
 offset = dimensaoTela / dimensaoGrade
 numPeixes = 15
 numTubaroes = 5
+
+Tubarao.grade = Grade(dimensaoTela, offset)
 
 screen = pygame.display.set_mode((dimensaoTela, dimensaoTela), 0, 32)
 
