@@ -38,7 +38,7 @@ class Agente(object):
         
         if self.y - offset >= 0: # peixe sobe
             movimentosPossiveis.append((self.x, self.y - offset))
-            
+        """    
         if self.x + offset <= dimensaoTela and self.y - offset >= 0: # avanca e sobe
             movimentosPossiveis.append((self.x + offset, self.y - offset))
         
@@ -50,7 +50,7 @@ class Agente(object):
         
         if self.y + offset <= dimensaoTela and self.x - offset >= 0: # desce e recua
             movimentosPossiveis.append((self.x - offset, self.y + offset))        
-        
+        """
         return movimentosPossiveis
 
 
