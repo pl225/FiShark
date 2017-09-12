@@ -8,17 +8,18 @@ import pygame, random
 from pygame.locals import *
 from sys import exit
 from Agentes import Peixe, Tubarao, novosAgentes
-from Modelo import Grade
+from Modelo import Grade, Rastro
  
 pygame.init()
 
 dimensaoTela = 640
 dimensaoGrade = 64
 offset = dimensaoTela / dimensaoGrade
-numPeixes = 15
+numPeixes = 5
 numTubaroes = 5
 
-Tubarao.grade = Grade(dimensaoTela, offset)
+#Tubarao.grade = Grade(dimensaoTela, offset)
+Peixe.grade = Grade(dimensaoTela, offset)
 
 screen = pygame.display.set_mode((dimensaoTela, dimensaoTela), 0, 32)
 
@@ -32,6 +33,10 @@ Peixe.image = fishImage
 shark_filename = 'shark.png'
 sharkImage = pygame.image.load(shark_filename).convert_alpha()
 Tubarao.image = sharkImage
+
+rastro_filename = 'rastro.png'
+rastroImage = pygame.image.load(rastro_filename).convert_alpha()
+Rastro.imagem = rastroImage
 
 tubaroes = [Tubarao(offset, offset), Tubarao(dimensaoTela - offset, offset), Tubarao(offset, dimensaoTela - offset), Tubarao(dimensaoTela - offset, dimensaoTela - offset)]
 #tubaroes = [Tubarao(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numTubaroes)]
@@ -49,7 +54,14 @@ while True:
     screen.blit(background, (0, 0))
     
     agentes = novosAgentes(agentes, dimensaoTela, offset)
+    
     for a in agentes:
+        if isinstance(a ,Peixe):
+            for r in a.vetorRastro:
+                screen.blit(Rastro.imagem, (r.x, r.y))
+                
+    for a in agentes:
+        #print a.x, a.y, a
         screen.blit(a.image, (a.x, a.y))
 
     pygame.display.update()

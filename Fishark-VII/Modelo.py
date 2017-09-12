@@ -58,3 +58,13 @@ class Grade(object):
             for j in range(len(self.posicoes)):
                 if self.posicoes[i][j].tempo >= 100: continue
                 else: self.posicoes[i][j].tempo += 1 # temos que aumentar o tempo pra diminuir a probabilidade
+
+class Rastro(object):
+    imagem = None
+    def __init__(self, x, y, tempo = 10):
+        self.x = x
+        self.y = y
+        self.tempo = tempo
+
+    def descontarTempo(self):
+        self.tempo = self.tempo - 1

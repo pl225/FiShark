@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import math
 import random
+from Modelo import Rastro
 
 class Agente(object):
     image = None
@@ -22,18 +23,18 @@ class Agente(object):
         if self.y > outro.y + offset: return False
         if self.x + offset  < outro.x: return False
         if self.x > outro.x + offset: return False
-        return True
+        return True                        
     
     def movimentar(self, dimensaoTela, offset):
         movimentosPossiveis = []
         
-        if self.x + offset <= dimensaoTela: # peixe anda pra frente
+        if self.x + offset < dimensaoTela: # peixe anda pra frente
             movimentosPossiveis.append((self.x + offset, self.y))
         
         if self.x - offset >= 0: # peixe anda pra tras
             movimentosPossiveis.append((self.x - offset, self.y))
             
-        if self.y + offset <= dimensaoTela: # peixe desce
+        if self.y + offset < dimensaoTela: # peixe desce
             movimentosPossiveis.append((self.x, self.y + offset))
         
         if self.y - offset >= 0: # peixe sobe
@@ -56,9 +57,11 @@ class Agente(object):
 
 class Peixe(Agente):
     raio = 5
-    def __init__(self, x, y):
+    grade = None
+    def __init__(self, x, y, vetorRastro = []):
         super(Peixe, self).__init__(x, y)
         self.reproduziu = 0
+        self.vetorRastro = vetorRastro
         
     def proximaPosicao(self, agentes, dimensaoTela, offset):
         
@@ -72,8 +75,9 @@ class Peixe(Agente):
         for a in agentes:
             if a is not self:
                 if isinstance(a, Tubarao) and self.manhattan(a) <= offset * Peixe.raio:
-                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
-                    self.x, self.y = max(distancias, key=lambda i: i[1])[0]
+                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis]
+                    self.x, self.y = random.choice([c[0] for c in distancias if  c[1] == max(distancias, key=lambda i: i[1])[1]])
+                    self.marcarRastro(a)
                     return None
         for a in agentes:
             if a is not self:
@@ -91,7 +95,18 @@ class Peixe(Agente):
             x, y = random.choice(m.movimentar(dimensaoTela, offset*20))
         else:
             x, y = random.choice(p.movimentar(dimensaoTela, offset*20))
-        return Peixe(x, y)            
+        return Peixe(x, y)
+    
+    def marcarRastro(self, peixe):
+        Peixe.grade[self.x, self.y].tempo = 0 # observe, aqui esta sendo usado o get e o set
+        Peixe.grade[self.x, self.y].anguloPontos(peixe)
+        
+        novoRastro = Rastro(self.x, self.y)
+    
+        if len(self.vetorRastro) >= 20:
+            self.vetorRastro.pop(0) 
+        
+        self.vetorRastro.append(novoRastro)            
 
 class Tubarao(Agente):
     raio = 10
@@ -116,15 +131,15 @@ class Tubarao(Agente):
                 if isinstance(a, Peixe) and self.manhattan(a) <= offset * Tubarao.raio:
                     distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
                     self.x, self.y = min(distancias, key=lambda i: i[1])[0]
-                    self.marcarRastro(a)
+                    #self.marcarRastro(a)
                     return None
                     
-        if len(movimentosPossiveis) > 0: self.x, self.y = Tubarao.grade.weighted_choice(movimentosPossiveis)#random.choice(movimentosPossiveis)        
-    
+        if len(movimentosPossiveis) > 0: self.x, self.y = random.choice(movimentosPossiveis)#Tubarao.grade.weighted_choice(movimentosPossiveis)#        
+    """
     def marcarRastro(self, peixe):
         Tubarao.grade[self.x, self.y].tempo = 0 # observe, aqui esta sendo usado o get e o set
         Tubarao.grade[self.x, self.y].anguloPontos(peixe)        
-        
+    """    
 def novosAgentes(agentes, dimensaoTela, offset):
     lista = []
     e = None
@@ -135,5 +150,5 @@ def novosAgentes(agentes, dimensaoTela, offset):
     for a in agentes:
         if a.tempoVida > 0:
             lista.append(a)
-    Tubarao.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
+    #Tubarao.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
     return lista
