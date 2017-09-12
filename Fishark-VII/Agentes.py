@@ -84,7 +84,9 @@ class Peixe(Agente):
                 if isinstance(a, Peixe) and self.colisao(a, offset) and not (self.reproduziu or a.reproduziu):
                     novoPeixe = Peixe.reproduzir(self, a, dimensaoTela, offset)
                     break
-        if len(movimentosPossiveis) > 0: self.x, self.y = random.choice(movimentosPossiveis)
+        if len(movimentosPossiveis) > 0: 
+            self.x, self.y = random.choice(movimentosPossiveis)
+            self.marcarRastro()
         return novoPeixe
     
     @staticmethod
@@ -97,13 +99,13 @@ class Peixe(Agente):
             x, y = random.choice(p.movimentar(dimensaoTela, offset*20))
         return Peixe(x, y)
     
-    def marcarRastro(self, peixe):
+    def marcarRastro(self, tubarao = None):
         Peixe.grade[self.x, self.y].tempo = 0 # observe, aqui esta sendo usado o get e o set
-        Peixe.grade[self.x, self.y].anguloPontos(peixe)
+        if tubarao: Peixe.grade[self.x, self.y].anguloPontos(tubarao)
         
         novoRastro = Rastro(self.x, self.y)
     
-        if len(self.vetorRastro) >= 20:
+        if len(self.vetorRastro) >= 50:
             self.vetorRastro.pop(0) 
         
         self.vetorRastro.append(novoRastro)            
@@ -134,7 +136,7 @@ class Tubarao(Agente):
                     #self.marcarRastro(a)
                     return None
                     
-        if len(movimentosPossiveis) > 0: self.x, self.y = random.choice(movimentosPossiveis)#Tubarao.grade.weighted_choice(movimentosPossiveis)#        
+        if len(movimentosPossiveis) > 0: self.x, self.y = Peixe.grade.weighted_choice(movimentosPossiveis)##random.choice(movimentosPossiveis)        
     """
     def marcarRastro(self, peixe):
         Tubarao.grade[self.x, self.y].tempo = 0 # observe, aqui esta sendo usado o get e o set
@@ -150,5 +152,5 @@ def novosAgentes(agentes, dimensaoTela, offset):
     for a in agentes:
         if a.tempoVida > 0:
             lista.append(a)
-    #Tubarao.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
+    Peixe.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
     return lista
