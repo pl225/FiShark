@@ -41,6 +41,9 @@ Rastro.imagem = rastroImage
 shark_leader_filename = 'shark2.png'
 sharkLeaderImage = pygame.image.load(shark_leader_filename).convert_alpha()
 
+fish_leader_filename = 'fish2.png'
+fishLeaderImage = pygame.image.load(fish_leader_filename).convert_alpha()
+
 #tubaroes = [Tubarao(offset, offset), Tubarao(dimensaoTela - offset, offset), Tubarao(offset, dimensaoTela - offset), Tubarao(dimensaoTela - offset, dimensaoTela - offset)]
 tubaroes = [Tubarao(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numTubaroes)]
 agentes = [Peixe(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numPeixes)]
@@ -48,6 +51,7 @@ agentes = [Peixe(random.randrange(0, dimensaoTela, offset), random.randrange(0, 
 agentes = tubaroes + agentes
 
 Tubarao.escolheNovoLider(agentes)
+Peixe.escolheNovoLider(agentes)
 
 pygame.display.set_caption('FiShark')
 clock = pygame.time.Clock()
@@ -65,10 +69,16 @@ while True:
             for r in a.vetorRastro:
                 screen.blit(Rastro.imagem, (r.x, r.y))
                 
+        #if isinstance(a, Tubarao):
+        #    for r in a.vetorRastro:
+        #        screen.blit(Rastro.imagem, (r.x, r.y))
+                
     for a in agentes:
         if isinstance(a, Tubarao) and a.lider:
             screen.blit(sharkLeaderImage, (a.x, a.y))
-        else:    
+        elif isinstance(a, Peixe) and a.lider:
+            screen.blit(fishLeaderImage, (a.x, a.y))    
+        else:
             screen.blit(a.image, (a.x, a.y))
 
     pygame.display.update()

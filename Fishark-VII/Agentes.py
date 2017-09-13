@@ -63,6 +63,7 @@ class Peixe(Agente):
         super(Peixe, self).__init__(x, y)
         self.reproduziu = 0
         self.vetorRastro = vetorRastro
+        self.lider = False
         
     def proximaPosicao(self, agentes, dimensaoTela, offset):
         
@@ -80,11 +81,20 @@ class Peixe(Agente):
                     self.x, self.y = random.choice([c[0] for c in distancias if  c[1] == max(distancias, key=lambda i: i[1])[1]])
                     self.marcarRastro(a)
                     return novoPeixe
+        
         for a in agentes:
             if a is not self:
                 if isinstance(a, Peixe) and self.colisao(a, offset) and not (self.reproduziu or a.reproduziu):
                     novoPeixe = Peixe.reproduzir(self, a, dimensaoTela, offset)
                     break
+        
+        for a in agentes:
+            if a is not self:
+                if isinstance(a, Peixe) and a.lider and self.manhattan(a) <= offset * Peixe.raio * 2:
+                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis]
+                    self.x, self.y = min(distancias, key=lambda i: i[1])[0]
+                    return novoPeixe
+                    
         if len(movimentosPossiveis) > 0: 
             self.x, self.y = random.choice(movimentosPossiveis)
             self.marcarRastro()
@@ -109,7 +119,15 @@ class Peixe(Agente):
         if len(self.vetorRastro) >= 50:
             self.vetorRastro.pop(0) 
         
-        self.vetorRastro.append(novoRastro)            
+        self.vetorRastro.append(novoRastro)
+        
+    @staticmethod
+    def escolheLider(agentes):
+        max([a for a in agentes if isinstance(a, Peixe)], key= lambda i: i.tempoVida).lider = True
+        
+    @staticmethod
+    def escolheNovoLider(agentes):
+        if len([a for a in agentes if isinstance(a, Peixe) and a.lider]) == 0: Peixe.escolheLider(agentes)            
 
 class Tubarao(Agente):
     raio = 10
@@ -142,7 +160,7 @@ class Tubarao(Agente):
                 
         for a in agentes:
             if a is not self:
-                if isinstance(a, Tubarao) and a.lider and self.colisao(a, offset):
+                if isinstance(a, Tubarao) and a.lider and self.manhattan(a) <= offset * Tubarao.raio:
                     distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
                     self.x, self.y = min(distancias, key=lambda i: i[1])[0]
                     return novoTubarao
@@ -187,4 +205,5 @@ def novosAgentes(agentes, dimensaoTela, offset):
             lista.append(a)
     Peixe.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
     Tubarao.escolheNovoLider(lista)
+    Peixe.escolheNovoLider(lista)
     return lista
