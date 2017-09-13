@@ -38,11 +38,16 @@ rastro_filename = 'rastro.png'
 rastroImage = pygame.image.load(rastro_filename).convert_alpha()
 Rastro.imagem = rastroImage
 
+shark_leader_filename = 'shark2.png'
+sharkLeaderImage = pygame.image.load(shark_leader_filename).convert_alpha()
+
 #tubaroes = [Tubarao(offset, offset), Tubarao(dimensaoTela - offset, offset), Tubarao(offset, dimensaoTela - offset), Tubarao(dimensaoTela - offset, dimensaoTela - offset)]
 tubaroes = [Tubarao(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numTubaroes)]
 agentes = [Peixe(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numPeixes)]
 
 agentes = tubaroes + agentes
+
+Tubarao.escolheNovoLider(agentes)
 
 pygame.display.set_caption('FiShark')
 clock = pygame.time.Clock()
@@ -61,8 +66,10 @@ while True:
                 screen.blit(Rastro.imagem, (r.x, r.y))
                 
     for a in agentes:
-        #print a.x, a.y, a
-        screen.blit(a.image, (a.x, a.y))
+        if isinstance(a, Tubarao) and a.lider:
+            screen.blit(sharkLeaderImage, (a.x, a.y))
+        else:    
+            screen.blit(a.image, (a.x, a.y))
 
     pygame.display.update()
     time_passed = clock.tick(5)

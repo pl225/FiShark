@@ -3,6 +3,7 @@
 import math
 import random
 from Modelo import Rastro
+from __builtin__ import isinstance
 
 class Agente(object):
     image = None
@@ -10,7 +11,7 @@ class Agente(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.tempoVida = 5000000000
+        self.tempoVida = random.randint(0, 5000)
 
     def manhattan(self, outro):
         return math.fabs(self.x - outro.x) + math.fabs(self.y - outro.y)
@@ -104,6 +105,7 @@ class Tubarao(Agente):
     def __init__(self, x, y):
         super(Tubarao, self).__init__(x, y)
         self.reproduziu = 0
+        self.lider = False
         
     def proximaPosicao(self, agentes, dimensaoTela, offset):
     
@@ -125,6 +127,13 @@ class Tubarao(Agente):
                 if isinstance(a, Tubarao) and self.colisao(a, offset) and not (self.reproduziu or a.reproduziu):
                     novoTubarao = Tubarao.reproduzir(self, a, dimensaoTela, offset)
                     break
+                
+        for a in agentes:
+            if a is not self:
+                if isinstance(a, Tubarao) and a.lider and self.colisao(a, offset):
+                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
+                    self.x, self.y = min(distancias, key=lambda i: i[1])[0]
+                    return novoTubarao
         
         for a in agentes:
             if a is not self:
@@ -144,7 +153,15 @@ class Tubarao(Agente):
             x, y = random.choice(m.movimentar(dimensaoTela, offset*20))
         else:
             x, y = random.choice(p.movimentar(dimensaoTela, offset*20))
-        return Tubarao(x, y)    
+        return Tubarao(x, y)
+    
+    @staticmethod
+    def escolheLider(agentes):
+        max([a for a in agentes if isinstance(a, Tubarao)], key= lambda i: i.tempoVida).lider = True
+        
+    @staticmethod
+    def escolheNovoLider(agentes):
+        if len([a for a in agentes if isinstance(a, Tubarao) and a.lider]) == 0: Tubarao.escolheLider(agentes)     
    
 def novosAgentes(agentes, dimensaoTela, offset):
     lista = []
@@ -157,4 +174,5 @@ def novosAgentes(agentes, dimensaoTela, offset):
         if a.tempoVida > 0:
             lista.append(a)
     Peixe.grade.atualizaProbabilidadeGrade() # atualizando a cada iteracao
+    Tubarao.escolheNovoLider(lista)
     return lista
