@@ -39,19 +39,7 @@ class Agente(object):
         
         if self.y - offset >= 0: # peixe sobe
             movimentosPossiveis.append((self.x, self.y - offset))
-        """    
-        if self.x + offset <= dimensaoTela and self.y - offset >= 0: # avanca e sobe
-            movimentosPossiveis.append((self.x + offset, self.y - offset))
         
-        if self.x - offset >= 0 and self.y - offset >= 0: # recua e sobe
-            movimentosPossiveis.append((self.x - offset, self.y - offset))
-        
-        if self.y + offset <= dimensaoTela and self.x + offset <= dimensaoTela: # avanca e desce
-            movimentosPossiveis.append((self.x + offset, self.y + offset))
-        
-        if self.y + offset <= dimensaoTela and self.x - offset >= 0: # desce e recua
-            movimentosPossiveis.append((self.x - offset, self.y + offset))        
-        """
         return movimentosPossiveis
 
 
@@ -78,7 +66,7 @@ class Peixe(Agente):
                     distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis]
                     self.x, self.y = random.choice([c[0] for c in distancias if  c[1] == max(distancias, key=lambda i: i[1])[1]])
                     self.marcarRastro(a)
-                    return None
+                    return novoPeixe
         for a in agentes:
             if a is not self:
                 if isinstance(a, Peixe) and self.colisao(a, offset) and not (self.reproduziu or a.reproduziu):
@@ -91,7 +79,7 @@ class Peixe(Agente):
     
     @staticmethod
     def reproduzir(p, m, dimensaoTela, offset):
-        p.reproduziu = 10000; m.reproduziu = 10000
+        p.reproduziu = 200; m.reproduziu = 200
         x, y = 0, 0
         if random.randint(0, 1):
             x, y = random.choice(m.movimentar(dimensaoTela, offset*20))
@@ -115,11 +103,15 @@ class Tubarao(Agente):
     grade = None
     def __init__(self, x, y):
         super(Tubarao, self).__init__(x, y)
+        self.reproduziu = 0
         
     def proximaPosicao(self, agentes, dimensaoTela, offset):
-        
+    
+        if self.reproduziu > 0: self.reproduziu -= 1    
         if self.tempoVida > 0: self.tempoVida -= 1
         else: return None
+        
+        novoTubarao = None
         
         movimentosPossiveis = self.movimentar(dimensaoTela, offset)
         
@@ -127,21 +119,33 @@ class Tubarao(Agente):
             if a is not self:
                 if isinstance(a, Peixe) and self.colisao(a, offset):
                     a.tempoVida = 0
+                    
+        for a in agentes:
+            if a is not self:
+                if isinstance(a, Tubarao) and self.colisao(a, offset) and not (self.reproduziu or a.reproduziu):
+                    novoTubarao = Tubarao.reproduzir(self, a, dimensaoTela, offset)
+                    break
         
         for a in agentes:
             if a is not self:
                 if isinstance(a, Peixe) and self.manhattan(a) <= offset * Tubarao.raio:
                     distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis] 
                     self.x, self.y = min(distancias, key=lambda i: i[1])[0]
-                    #self.marcarRastro(a)
-                    return None
+                    return novoTubarao
                     
-        if len(movimentosPossiveis) > 0: self.x, self.y = Peixe.grade.weighted_choice(movimentosPossiveis)##random.choice(movimentosPossiveis)        
-    """
-    def marcarRastro(self, peixe):
-        Tubarao.grade[self.x, self.y].tempo = 0 # observe, aqui esta sendo usado o get e o set
-        Tubarao.grade[self.x, self.y].anguloPontos(peixe)        
-    """    
+        if len(movimentosPossiveis) > 0: self.x, self.y = Peixe.grade.weighted_choice(movimentosPossiveis)##random.choice(movimentosPossiveis)
+        return novoTubarao
+        
+    @staticmethod
+    def reproduzir(p, m, dimensaoTela, offset):
+        p.reproduziu = 200; m.reproduziu = 200
+        x, y = 0, 0
+        if random.randint(0, 1):
+            x, y = random.choice(m.movimentar(dimensaoTela, offset*20))
+        else:
+            x, y = random.choice(p.movimentar(dimensaoTela, offset*20))
+        return Tubarao(x, y)    
+   
 def novosAgentes(agentes, dimensaoTela, offset):
     lista = []
     e = None

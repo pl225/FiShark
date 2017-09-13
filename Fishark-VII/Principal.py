@@ -15,7 +15,7 @@ pygame.init()
 dimensaoTela = 640
 dimensaoGrade = 64
 offset = dimensaoTela / dimensaoGrade
-numPeixes = 5
+numPeixes = 10
 numTubaroes = 5
 
 #Tubarao.grade = Grade(dimensaoTela, offset)
@@ -38,8 +38,8 @@ rastro_filename = 'rastro.png'
 rastroImage = pygame.image.load(rastro_filename).convert_alpha()
 Rastro.imagem = rastroImage
 
-tubaroes = [Tubarao(offset, offset), Tubarao(dimensaoTela - offset, offset), Tubarao(offset, dimensaoTela - offset), Tubarao(dimensaoTela - offset, dimensaoTela - offset)]
-#tubaroes = [Tubarao(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numTubaroes)]
+#tubaroes = [Tubarao(offset, offset), Tubarao(dimensaoTela - offset, offset), Tubarao(offset, dimensaoTela - offset), Tubarao(dimensaoTela - offset, dimensaoTela - offset)]
+tubaroes = [Tubarao(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numTubaroes)]
 agentes = [Peixe(random.randrange(0, dimensaoTela, offset), random.randrange(0, dimensaoTela, offset)) for _ in range(numPeixes)]
 
 agentes = tubaroes + agentes
