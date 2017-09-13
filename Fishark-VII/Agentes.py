@@ -31,15 +31,27 @@ class Agente(object):
         
         if self.x + offset < dimensaoTela: # peixe anda pra frente
             movimentosPossiveis.append((self.x + offset, self.y))
+
+        elif self.x + offset >= dimensaoTela: # ambiente sem limites
+            movimentosPossiveis.append((0, self.y))
         
         if self.x - offset >= 0: # peixe anda pra tras
             movimentosPossiveis.append((self.x - offset, self.y))
+
+        elif self.x - offset < 0: # ambiente sem limites
+            movimentosPossiveis.append((dimensaoTela - offset, self.y))
             
         if self.y + offset < dimensaoTela: # peixe desce
             movimentosPossiveis.append((self.x, self.y + offset))
         
+        elif self.y + offset >= dimensaoTela: # ambiente sem limites
+            movimentosPossiveis.append((self.x, 0))
+
         if self.y - offset >= 0: # peixe sobe
             movimentosPossiveis.append((self.x, self.y - offset))
+
+        elif self.y - offset < 0: # ambiente sem limites
+            movimentosPossiveis.append((self.x, dimensaoTela - offset))
         
         return movimentosPossiveis
 
