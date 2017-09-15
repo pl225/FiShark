@@ -15,7 +15,7 @@ pygame.init()
 dimensaoTela = 640
 dimensaoGrade = 64
 offset = dimensaoTela / dimensaoGrade
-numPeixes = 10
+numPeixes = 15
 numTubaroes = 5
 
 #Tubarao.grade = Grade(dimensaoTela, offset)
@@ -68,10 +68,6 @@ while True:
         if isinstance(a ,Peixe):
             for r in a.vetorRastro:
                 screen.blit(Rastro.imagem, (r.x, r.y))
-                
-        #if isinstance(a, Tubarao):
-        #    for r in a.vetorRastro:
-        #        screen.blit(Rastro.imagem, (r.x, r.y))
                 
     for a in agentes:
         if isinstance(a, Tubarao) and a.lider:

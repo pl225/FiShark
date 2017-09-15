@@ -6,6 +6,7 @@ class Posicao(object):
         self.y = y
         self.tempo = tempo
         self.angulo = 0
+        self.marcado = False
         
     def decrescimoProbabilidade (self, C = 1, p = 0.07):
         return C * math.exp(-p * self.tempo)
@@ -23,6 +24,7 @@ class Grade(object):
         self.posicoes = self.crie_matriz(dimensao, offset)
         self.dimensao = dimensao
         self.offset = offset
+        self.direcao = 0
         
     def __getitem__ (self, index): # isso e o q achei
         return self.posicoes[index[0] / self.offset][index[1] / self.offset] # dividir pelo offset
@@ -58,6 +60,18 @@ class Grade(object):
             for j in range(len(self.posicoes)):
                 if self.posicoes[i][j].tempo >= 100: continue
                 else: self.posicoes[i][j].tempo += 1 # temos que aumentar o tempo pra diminuir a probabilidade
+                
+    def decidePosicao (self, orientacao, c):
+        if orientacao == 0:
+            if c + self.offset < self.dimensao:
+                return c + self.offset
+            else :
+                return 0
+        elif orientacao == 1:
+            if c - self.offset < 0:
+                return self.dimensao - self.offset
+            else :
+                return c - self.offset
 
 class Rastro(object):
     imagem = None

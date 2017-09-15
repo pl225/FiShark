@@ -86,10 +86,13 @@ class Peixe(Agente):
         for a in agentes:
             if a is not self:
                 if isinstance(a, Tubarao) and self.manhattan(a) <= offset * Peixe.raio:
-                    distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis]
-                    self.x, self.y = random.choice([c[0] for c in distancias if  c[1] == max(distancias, key=lambda i: i[1])[1]])
                     if self.lider:
                         self.marcarRastro(a)
+                        Peixe.fugaPeixeLider(self)
+                        print "líder fugindo zig zag"
+                    else:
+                        distancias = [((x, y), math.fabs(x - a.x) + math.fabs(y - a.y)) for (x, y) in movimentosPossiveis]
+                        self.x, self.y = random.choice([c[0] for c in distancias if  c[1] == max(distancias, key=lambda i: i[1])[1]])
                     return novoPeixe
         
         for a in agentes:
@@ -150,7 +153,40 @@ class Peixe(Agente):
         
     @staticmethod
     def escolheNovoLider(agentes):
-        if len([a for a in agentes if isinstance(a, Peixe) and a.lider]) == 0: Peixe.escolheLider(agentes)            
+        if len([a for a in agentes if isinstance(a, Peixe) and a.lider]) == 0: Peixe.escolheLider(agentes)
+        
+    @staticmethod
+    def fugaPeixeLider(peixe):
+        Peixe.grade[peixe.x, peixe.y].marcado = True
+        if Peixe.grade.direcao == 0:
+            Peixe.grade.direcao = 1
+            x = Peixe.grade.decidePosicao(0, peixe.x)
+            if not Peixe.grade[x, peixe.y].marcado:
+                peixe.x = x
+            else:
+                peixe.x = Peixe.grade.decidePosicao(1, peixe.x)
+        elif Peixe.grade.direcao == 1:
+            Peixe.grade.direcao = 2
+            y = Peixe.grade.decidePosicao(0, peixe.y)
+            if not Peixe.grade[peixe.x, y].marcado:
+                peixe.y = y
+            else:
+                peixe.y = Peixe.grade.decidePosicao(1, peixe.y)
+        elif Peixe.grade.direcao == 2:
+            Peixe.grade.direcao = 3
+            x = Peixe.grade.decidePosicao(1, peixe.x)
+            if not Peixe.grade[x, peixe.y].marcado:
+                peixe.x = x
+            else:
+                peixe.x = Peixe.grade.decidePosicao(0, peixe.x)
+        else:
+            Peixe.grade.direcao = 0
+            y = Peixe.grade.decidePosicao(1, peixe.y)
+            if not Peixe.grade[peixe.x, y].marcado:
+                peixe.y = y
+            else:
+                peixe.y = Peixe.grade.decidePosicao(0, peixe.y)
+                        
 
 class Tubarao(Agente):
     raio = 10
@@ -227,7 +263,7 @@ class Tubarao(Agente):
         
     @staticmethod
     def escolheNovoLider(agentes):
-        if len([a for a in agentes if isinstance(a, Tubarao) and a.lider]) == 0: Tubarao.escolheLider(agentes)     
+        if len([a for a in agentes if isinstance(a, Tubarao) and a.lider]) and len(agentes): Tubarao.escolheLider(agentes)     
    
 def novosAgentes(agentes, dimensaoTela, offset):
     lista = []
