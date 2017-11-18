@@ -20,25 +20,25 @@ class Posicao(object):
             self.angulo = 0 # ai coloquei pra retornar zero por padrao
 
 class Grade(object):
-    def __init__(self, dimensao, offset):
-        self.posicoes = self.crie_matriz(dimensao, offset)
-        self.dimensao = dimensao
-        self.offset = offset
+    def __init__(self, dimensaoAltura, dimensaoLargura, offsetY, offsetX):
+        self.posicoes = self.crie_matriz(dimensaoAltura, dimensaoLargura, offsetY, offsetX)
+        self.dimensaoAltura = dimensaoAltura
+        self.dimensaoLargura = dimensaoLargura
+        self.offsetY = offsetY
+        self.offsetX = offsetX
         self.direcao = 0
         
     def __getitem__ (self, index): # isso e o q achei
-        return self.posicoes[index[0] / self.offset][index[1] / self.offset] # dividir pelo offset
-        # Tubarao.grade[x, y] esta acessando o operador [] sobrescrito, por isso possui verificacao
-        # Tubarao.grade.posicoes[x][y] esta acessando o atributo diretamente sem chamar a funcao get nem set, por isso nao tem verificacao
+        return self.posicoes[index[0] / self.offsetY][index[1] / self.offsetX] # dividir pelo offset
     
     def __setitem__ (self, index, value):
-        self.posicoes[index[0] / self.offset][index[1] / self.offset] = value
+        self.posicoes[index[0] / self.offsetY][index[1] / self.offsetX] = value
     
-    def crie_matriz(self, dimensao, offset):    
+    def crie_matriz(self, dimensaoAltura, dimensaoLargura, offsetY, offsetX):    
         matriz = []
-        for i in range(0, dimensao + offset, offset): # as coordenadas devem bater com as posicoes possiveis da grade
+        for i in range(0, dimensaoAltura + offsetY, offsetY): # as coordenadas devem bater com as posicoes possiveis da grade
             linha = []
-            for j in range(0, dimensao + offset, offset):
+            for j in range(0, dimensaoLargura + offsetX, offsetX):
                 linha.append(Posicao(i,j))
             matriz.append(linha)
     
@@ -63,15 +63,15 @@ class Grade(object):
                 
     def decidePosicao (self, orientacao, c):
         if orientacao == 0:
-            if c + self.offset < self.dimensao:
-                return c + self.offset
+            if c + self.offsetX < self.dimensaoLargura:
+                return c + self.offsetX
             else :
                 return 0
         elif orientacao == 1:
-            if c - self.offset < 0:
-                return self.dimensao - self.offset
+            if c - self.offsetY < 0:
+                return self.dimensaoAltura - self.offsetY
             else :
-                return c - self.offset
+                return c - self.offsetY
 
 class Rastro(object):
     imagem = None

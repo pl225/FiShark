@@ -12,21 +12,25 @@ from Modelo import Grade, Rastro
  
 pygame.init()
 
-dimensaoTela = 640
-dimensaoGrade = 64
-offset = dimensaoTela / dimensaoGrade
+dimensaoTelaAltura = 640
+dimensaoTelaLargura = 640
+dimensaoGradeAltura = 64
+dimensaoGradeLargura = 64
+offsetY = dimensaoTelaAltura / dimensaoGradeAltura
+offsetX = dimensaoGradeLargura / dimensaoGradeLargura
+
 numPeixes = 15
 numTubaroes = 5
 
 #Tubarao.grade = Grade(dimensaoTela, offset)
-Peixe.grade = Grade(dimensaoTela, offset)
+Peixe.grade = Grade(dimensaoTelaAltura, dimensaoGradeLargura, offsetY, offsetX)
 
-screen = pygame.display.set_mode((dimensaoTela, dimensaoTela), 0, 32)
+screen = pygame.display.set_mode((dimensaoTelaLargura, dimensaoTelaAltura), 0, 32)
 
 background_filename = 'background.png'
 background = pygame.image.load(background_filename).convert()
 
-fish_filename = 'fish.png'
+fish_filename = 'ghost.png'
 fishImage = pygame.image.load(fish_filename).convert_alpha()
 Peixe.image = fishImage
 
@@ -62,7 +66,7 @@ while True:
     
     screen.blit(background, (0, 0))
     
-    agentes = novosAgentes(agentes, dimensaoTela, offset)
+    agentes = novosAgentes(agentes, dimensaoTelaAltura, dimensaoGradeLargura, offsetY, offsetX)
     
     for a in agentes:
         if isinstance(a ,Peixe):

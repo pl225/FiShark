@@ -16,7 +16,7 @@ class Agente(object):
     def manhattan(self, outro):
         return math.fabs(self.x - outro.x) + math.fabs(self.y - outro.y)
     
-    def proximaPosicao(self, agentes, dimensaoTela, offset):
+    def proximaPosicao(self, agentes, dimensaoTelaAltura, dimensaoTelaLargura, offsetY, offsetX):
         raise NotImplementedError
     
     def colisao(self, outro, offset):
@@ -65,7 +65,7 @@ class Peixe(Agente):
         self.vetorRastro = vetorRastro
         self.lider = False
         
-    def proximaPosicao(self, agentes, dimensaoTela, offset):
+    def proximaPosicao(self, agentes, dimensaoTelaAltura, dimensaoTelaLargura, offsetY, offsetX):
         
         if self.reproduziu > 0: self.reproduziu -= 1 
         if self.tempoVida > 0: self.tempoVida -= 1
@@ -265,11 +265,11 @@ class Tubarao(Agente):
     def escolheNovoLider(agentes):
         if len([a for a in agentes if isinstance(a, Tubarao) and a.lider]) and len(agentes): Tubarao.escolheLider(agentes)     
    
-def novosAgentes(agentes, dimensaoTela, offset):
+def novosAgentes(agentes, dimensaoTelaAltura, dimensaoTelaLargura, offsetY, offsetX):
     lista = []
     e = None
     for a in agentes:
-        e = a.proximaPosicao(agentes, dimensaoTela, offset)
+        e = a.proximaPosicao(agentes, dimensaoTelaAltura, dimensaoTelaLargura, offsetY, offsetX)
         if e: 
             lista.append(e)        
     for a in agentes:
